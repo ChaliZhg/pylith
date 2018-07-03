@@ -205,7 +205,7 @@ pylith::faults::FaultCohesive::adjustTopology(topology::Mesh* const mesh)
                 throw std::runtime_error(msg.str());
             } // if
         } // if
-        TopologyOps::create(mesh, faultMesh, faultBdLabel, id());
+        TopologyOps::create(mesh, faultMesh, faultBdLabel, id(), label());
 
         // Check consistency of mesh.
         pylith::topology::MeshOps::checkTopology(*mesh);

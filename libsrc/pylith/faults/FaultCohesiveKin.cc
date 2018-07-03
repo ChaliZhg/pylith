@@ -136,7 +136,7 @@ pylith::faults::FaultCohesiveKin::prestep(const double t,
     PYLITH_METHOD_END;
 } // prestep
 
-
+#include <iostream>
 // ----------------------------------------------------------------------
 // Compute RHS residual for G(t,s).
 void
@@ -175,26 +175,32 @@ pylith::faults::FaultCohesiveKin::computeRHSResidual(pylith::topology::Field* re
     assert(solution.localVector());
     assert(residual->localVector());
 
-    PetscDMLabel dmLabel = NULL;
-    const int labelId = 1;
-    std::string faultLabel;
+    std::string faultLabelName = std::string(label()) + std::string("-interface");
+    PetscDMLabel faultDMLabel = NULL;
+    err = DMGetLabel(dmSoln, faultLabelName.c_str(), &faultDMLabel); PYLITH_CHECK_ERROR(err);assert(faultDMLabel);
 
+#if 1 // DEBUGGING
+    std::cout << "DOMAIN MESH" << std::endl;
+    solution.mesh().view("::ascii_info_detail");
+
+    std::cout << "FAULT MESH" << std::endl;
+    _auxField->mesh().view("::ascii_info_detail");
+    
+    err = DMLabelView(faultDMLabel, PETSC_VIEWER_STDOUT_SELF);
+#endif
+
+    const int spaceDim = solution.mesh().dimension();
+    
     PYLITH_COMPONENT_DEBUG("DMPlexComputeBdResidualSingle() on the positive side of fault '"<<label()<<"'.");
     _setFEKernelsRHSResidualFaultPositive(solution);
-    faultLabel = std::string(label()) + std::string("_fault_positive");
-    err = DMGetLabel(dmSoln, faultLabel.c_str(), &dmLabel); PYLITH_CHECK_ERROR(err);
-    err = DMPlexComputeBdResidualSingle(dmSoln, t, dmLabel, 1, &labelId, i_dispvel, solution.localVector(),
-                                        solutionDot.localVector(), residual->localVector()); PYLITH_CHECK_ERROR(err);
-    err = DMPlexComputeBdResidualSingle(dmSoln, t, dmLabel, 1, &labelId, i_lagrange, solution.localVector(),
+    const PylithInt labelValuePos = 100 + spaceDim-1;
+    err = DMPlexComputeBdResidualSingle(dmSoln, t, faultDMLabel, 1, &labelValuePos, i_dispvel, solution.localVector(),
                                         solutionDot.localVector(), residual->localVector()); PYLITH_CHECK_ERROR(err);
 
     PYLITH_COMPONENT_DEBUG("DMPlexComputeBdResidualSingle() on the negative side of fault '"<<label()<<"'.");
     _setFEKernelsRHSResidualFaultNegative(solution);
-    faultLabel = std::string(label()) + std::string("_fault_negative");
-    err = DMGetLabel(dmSoln, faultLabel.c_str(), &dmLabel); PYLITH_CHECK_ERROR(err);
-    err = DMPlexComputeBdResidualSingle(dmSoln, t, dmLabel, 1, &labelId, i_dispvel, solution.localVector(),
-                                        solutionDot.localVector(), residual->localVector()); PYLITH_CHECK_ERROR(err);
-    err = DMPlexComputeBdResidualSingle(dmSoln, t, dmLabel, 1, &labelId, i_lagrange, solution.localVector(),
+    const PylithInt labelValueNeg = -(100 + spaceDim-1);
+    err = DMPlexComputeBdResidualSingle(dmSoln, t, faultDMLabel, 1, &labelValueNeg, i_dispvel, solution.localVector(),
                                         solutionDot.localVector(), residual->localVector()); PYLITH_CHECK_ERROR(err);
 
     PYLITH_METHOD_END;
@@ -237,7 +243,7 @@ pylith::faults::FaultCohesiveKin::computeRHSJacobian(PetscMat jacobianMat,
     // Compute the local Jacobian
     assert(solution.localVector());
 
-    PetscDMLabel dmLabel = NULL;
+    PetscDMLabel faultDMLabel = NULL;
     const int labelId = 1;
     std::string faultLabel;
 
@@ -245,15 +251,15 @@ pylith::faults::FaultCohesiveKin::computeRHSJacobian(PetscMat jacobianMat,
     PYLITH_COMPONENT_DEBUG("DMPlexComputeBdJacobianSingle() on the positive side of fault ''"<<label()<<"')");
     _setFEKernelsRHSJacobianFaultPositive(solution);
     faultLabel = std::string(label()) + std::string("_fault_positive");
-    err = DMGetLabel(dmSoln, faultLabel.c_str(), &dmLabel); PYLITH_CHECK_ERROR(err);
-    err = DMPlexComputeBdJacobianSingle(dmSoln, t, tshift, dmLabel, 1, &labelId, solution.localVector(),
+    err = DMGetLabel(dmSoln, faultLabel.c_str(), &faultDMLabel); PYLITH_CHECK_ERROR(err);
+    err = DMPlexComputeBdJacobianSingle(dmSoln, t, tshift, faultDMLabel, 1, &labelId, solution.localVector(),
                                         solutionDot.localVector(), jacobianMat, precondMat, NULL); PYLITH_CHECK_ERROR(err);
 
     PYLITH_COMPONENT_DEBUG("DMPlexComputeBdJacobianSingle() on the negative side of fault ''"<<label()<<"')");
     _setFEKernelsRHSJacobianFaultNegative(solution);
     faultLabel = std::string(label()) + std::string("_fault_negative");
-    err = DMGetLabel(dmSoln, faultLabel.c_str(), &dmLabel); PYLITH_CHECK_ERROR(err);
-    err = DMPlexComputeBdJacobianSingle(dmSoln, t, tshift, dmLabel, 1, &labelId, solution.localVector(),
+    err = DMGetLabel(dmSoln, faultLabel.c_str(), &faultDMLabel); PYLITH_CHECK_ERROR(err);
+    err = DMPlexComputeBdJacobianSingle(dmSoln, t, tshift, faultDMLabel, 1, &labelId, solution.localVector(),
                                         solutionDot.localVector(), jacobianMat, precondMat, NULL); PYLITH_CHECK_ERROR(err);
 
 #else

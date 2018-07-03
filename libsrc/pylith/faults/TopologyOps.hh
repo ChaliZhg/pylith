@@ -63,12 +63,14 @@ public:
      * @param fault Finite-element mesh of fault (output)
      * @param mesh Finite-element mesh
      * @param materialId Material id for cohesive elements.
+     * @param label Fault label.
      */
     static
     void create(topology::Mesh* mesh,
                 const topology::Mesh& faultMesh,
                 PetscDMLabel faultBdLabel,
-                const int materialId);
+                const int materialId,
+		const char* label);
 
     /** Create (distributed) fault mesh from cohesive cells.
      *
