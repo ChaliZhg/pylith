@@ -28,10 +28,12 @@ check_PROGRAMS = testfaults
 
 # Primary source files
 testfaults_SOURCES = \
+	TestFaultCohesiveKin.cc \
+	TestFaultCohesiveKin_StepFn.cc \
 	test_faults.cc
 
 
-noinst_HEADERS = 
+noinst_HEADERS =
 
 AM_CPPFLAGS += \
 	$(PYTHON_EGG_CPPFLAGS) -I$(PYTHON_INCDIR) \
@@ -51,8 +53,4 @@ if ENABLE_CUBIT
 endif
 
 
-leakcheck: testfaults
-	valgrind --log-file=valgrind_faults.log --leak-check=full --suppressions=$(top_srcdir)/share/valgrind-python.supp .libs/testfaults
-
-
-# End of file 
+# End of file
