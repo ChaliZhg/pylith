@@ -88,15 +88,27 @@ public:
 
     /** Set first choice for reference direction to discriminate among tangential directions in 3-D.
      *
-     * @param vec Reference direction unit vector.
+     * @param[in] vec Reference direction unit vector.
      */
     void refDir1(const PylithReal vec[3]);
 
+    /** Get first choice for reference direction to discriminate among tangential directions in 3-D.
+     *
+     * @returns Reference direction unit vector.
+     */
+    const PylithReal* refDir1(void) const;
+
     /** Set second choice for reference direction to discriminate among tangential directions in 3-D.
      *
-     * @param vec Reference direction unit vector.
+     * @param[in] vec Reference direction unit vector.
      */
     void refDir2(const PylithReal vec[3]);
+
+    /** Get second choice for reference direction to discriminate among tangential directions in 3-D.
+     *
+     * @returns Reference direction unit vector.
+     */
+    const PylithReal* refDir2(void) const;
 
     /** Adjust mesh topology for fault implementation.
      *
@@ -124,7 +136,6 @@ public:
      */
     virtual
     void initialize(const pylith::topology::Field& solution);
-
 
     // PROTECTED NETHODS //////////////////////////////////////////////////
 protected:
@@ -155,15 +166,14 @@ protected:
     PetscIS _cohesivePointMap; ///< Map from fault point to higher dimension point in cohesive cell.
     pylith::faults::AuxiliaryFactory* _auxFaultFactory; ///< Factory for auxiliary subfields.
 
-
     // PRIVATE MEMBERS ////////////////////////////////////////////////////
 private:
 
     int _id; ///< Identifier for cohesive cells.
     std::string _label; ///< Label for vertices associated with fault.
     std::string _edge; ///< Label for vertices along buried edges of fault.
-    PylithReal _refDir1[3]; ///< First choice reference direction used to compute boundary tangential directions.
-    PylithReal _refDir2[3]; ///< Second choice reference direction used to compute boundary tangential directions.
+    PylithReal _refDir1[3]; ///< First choice reference direction used to compute fault tangential directions.
+    PylithReal _refDir2[3]; ///< Second choice reference direction used to compute fault tangential directions.
 
     // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private:
@@ -174,6 +184,5 @@ private:
 }; // class FaultCohesive
 
 #endif // pylith_faults_faultcohesive_hh
-
 
 // End of file
