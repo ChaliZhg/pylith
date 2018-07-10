@@ -34,8 +34,6 @@
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 #include "spatialdata/spatialdb/SpatialDB.hh" // USES SpatialDB
 
-
-
 #include <cmath> // USES pow(), sqrt()
 #include <strings.h> // USES strcasecmp()
 #include <cstring> // USES strlen()
@@ -49,16 +47,16 @@
 
 // ----------------------------------------------------------------------
 // Default constructor.
-pylith::faults::FaultCohesiveKin::FaultCohesiveKin(void)
-{ // constructor
+pylith::faults::FaultCohesiveKin::FaultCohesiveKin(void){ // constructor
 } // constructor
+
 
 // ----------------------------------------------------------------------
 // Destructor.
-pylith::faults::FaultCohesiveKin::~FaultCohesiveKin(void)
-{ // destructor
+pylith::faults::FaultCohesiveKin::~FaultCohesiveKin(void){ // destructor
     deallocate();
 } // destructor
+
 
 // ----------------------------------------------------------------------
 // Deallocate PETSc and local data structures.
@@ -68,6 +66,7 @@ pylith::faults::FaultCohesiveKin::deallocate(void) {
 
     _eqSrcs.clear(); // :TODO: Use shared pointers for earthquake sources
 } // deallocate
+
 
 // ----------------------------------------------------------------------
 // Set kinematic earthquake source.
@@ -116,6 +115,7 @@ pylith::faults::FaultCohesiveKin::initialize(const pylith::topology::Field& solu
     PYLITH_METHOD_END;
 } // initialize
 
+
 // ----------------------------------------------------------------------
 // Update auxiliary fields at beginning of time step.
 void
@@ -129,12 +129,13 @@ pylith::faults::FaultCohesiveKin::prestep(const double t,
     // Compute slip field at current time step
     const srcs_type::const_iterator srcsEnd = _eqSrcs.end();
     for (srcs_type::iterator s_iter = _eqSrcs.begin(); s_iter != srcsEnd; ++s_iter) {
-        KinSrc* src = s_iter->second; assert(src);
+        KinSrc* src = s_iter->second;assert(src);
         src->slip(_auxField, t);
     } // for
 
     PYLITH_METHOD_END;
 } // prestep
+
 
 #include <iostream>
 // ----------------------------------------------------------------------
@@ -163,11 +164,11 @@ pylith::faults::FaultCohesiveKin::computeRHSResidual(pylith::topology::Field* re
 
     // Pointwise functions have been set in DS
     PetscDS prob = NULL;
-    err = DMGetDS(dmSoln, &prob); PYLITH_CHECK_ERROR(err);
+    err = DMGetDS(dmSoln, &prob);PYLITH_CHECK_ERROR(err);
 
     // Get auxiliary data
-    err = PetscObjectCompose((PetscObject) dmSoln, "dmAux", (PetscObject) dmAux); PYLITH_CHECK_ERROR(err);
-    err = PetscObjectCompose((PetscObject) dmSoln, "A", (PetscObject) _auxField->localVector()); PYLITH_CHECK_ERROR(err);
+    err = PetscObjectCompose((PetscObject) dmSoln, "dmAux", (PetscObject) dmAux);PYLITH_CHECK_ERROR(err);
+    err = PetscObjectCompose((PetscObject) dmSoln, "A", (PetscObject) _auxField->localVector());PYLITH_CHECK_ERROR(err);
 
     _setFEConstants(solution, dt);
 
@@ -177,7 +178,7 @@ pylith::faults::FaultCohesiveKin::computeRHSResidual(pylith::topology::Field* re
 
     std::string faultLabelName = std::string(label()) + std::string("-interface");
     PetscDMLabel faultDMLabel = NULL;
-    err = DMGetLabel(dmSoln, faultLabelName.c_str(), &faultDMLabel); PYLITH_CHECK_ERROR(err);assert(faultDMLabel);
+    err = DMGetLabel(dmSoln, faultLabelName.c_str(), &faultDMLabel);PYLITH_CHECK_ERROR(err);assert(faultDMLabel);
 
 #if 1 // DEBUGGING
     std::cout << "DOMAIN MESH" << std::endl;
@@ -185,23 +186,23 @@ pylith::faults::FaultCohesiveKin::computeRHSResidual(pylith::topology::Field* re
 
     std::cout << "FAULT MESH" << std::endl;
     _auxField->mesh().view("::ascii_info_detail");
-    
+
     err = DMLabelView(faultDMLabel, PETSC_VIEWER_STDOUT_SELF);
 #endif
 
     const int spaceDim = solution.mesh().dimension();
-    
+
     PYLITH_COMPONENT_DEBUG("DMPlexComputeBdResidualSingle() on the positive side of fault '"<<label()<<"'.");
     _setFEKernelsRHSResidualFaultPositive(solution);
     const PylithInt labelValuePos = 100 + spaceDim-1;
     err = DMPlexComputeBdResidualSingle(dmSoln, t, faultDMLabel, 1, &labelValuePos, i_dispvel, solution.localVector(),
-                                        solutionDot.localVector(), residual->localVector()); PYLITH_CHECK_ERROR(err);
+                                        solutionDot.localVector(), residual->localVector());PYLITH_CHECK_ERROR(err);
 
     PYLITH_COMPONENT_DEBUG("DMPlexComputeBdResidualSingle() on the negative side of fault '"<<label()<<"'.");
     _setFEKernelsRHSResidualFaultNegative(solution);
     const PylithInt labelValueNeg = -(100 + spaceDim-1);
     err = DMPlexComputeBdResidualSingle(dmSoln, t, faultDMLabel, 1, &labelValueNeg, i_dispvel, solution.localVector(),
-                                        solutionDot.localVector(), residual->localVector()); PYLITH_CHECK_ERROR(err);
+                                        solutionDot.localVector(), residual->localVector());PYLITH_CHECK_ERROR(err);
 
     PYLITH_METHOD_END;
 } // computeRHSResidual
@@ -232,11 +233,11 @@ pylith::faults::FaultCohesiveKin::computeRHSJacobian(PetscMat jacobianMat,
 
     // Pointwise function have been set in DS
     PetscDS prob = NULL;
-    err = DMGetDS(dmSoln, &prob); PYLITH_CHECK_ERROR(err);
+    err = DMGetDS(dmSoln, &prob);PYLITH_CHECK_ERROR(err);
 
     // Get auxiliary data
-    err = PetscObjectCompose((PetscObject) dmSoln, "dmAux", (PetscObject) dmAux); PYLITH_CHECK_ERROR(err);
-    err = PetscObjectCompose((PetscObject) dmSoln, "A", (PetscObject) auxField().localVector()); PYLITH_CHECK_ERROR(err);
+    err = PetscObjectCompose((PetscObject) dmSoln, "dmAux", (PetscObject) dmAux);PYLITH_CHECK_ERROR(err);
+    err = PetscObjectCompose((PetscObject) dmSoln, "A", (PetscObject) auxField().localVector());PYLITH_CHECK_ERROR(err);
 
     _setFEConstants(solution, dt);
 
@@ -251,16 +252,16 @@ pylith::faults::FaultCohesiveKin::computeRHSJacobian(PetscMat jacobianMat,
     PYLITH_COMPONENT_DEBUG("DMPlexComputeBdJacobianSingle() on the positive side of fault ''"<<label()<<"')");
     _setFEKernelsRHSJacobianFaultPositive(solution);
     faultLabel = std::string(label()) + std::string("_fault_positive");
-    err = DMGetLabel(dmSoln, faultLabel.c_str(), &faultDMLabel); PYLITH_CHECK_ERROR(err);
+    err = DMGetLabel(dmSoln, faultLabel.c_str(), &faultDMLabel);PYLITH_CHECK_ERROR(err);
     err = DMPlexComputeBdJacobianSingle(dmSoln, t, tshift, faultDMLabel, 1, &labelId, solution.localVector(),
-                                        solutionDot.localVector(), jacobianMat, precondMat, NULL); PYLITH_CHECK_ERROR(err);
+                                        solutionDot.localVector(), jacobianMat, precondMat, NULL);PYLITH_CHECK_ERROR(err);
 
     PYLITH_COMPONENT_DEBUG("DMPlexComputeBdJacobianSingle() on the negative side of fault ''"<<label()<<"')");
     _setFEKernelsRHSJacobianFaultNegative(solution);
     faultLabel = std::string(label()) + std::string("_fault_negative");
-    err = DMGetLabel(dmSoln, faultLabel.c_str(), &faultDMLabel); PYLITH_CHECK_ERROR(err);
+    err = DMGetLabel(dmSoln, faultLabel.c_str(), &faultDMLabel);PYLITH_CHECK_ERROR(err);
     err = DMPlexComputeBdJacobianSingle(dmSoln, t, tshift, faultDMLabel, 1, &labelId, solution.localVector(),
-                                        solutionDot.localVector(), jacobianMat, precondMat, NULL); PYLITH_CHECK_ERROR(err);
+                                        solutionDot.localVector(), jacobianMat, precondMat, NULL);PYLITH_CHECK_ERROR(err);
 
 #else
     PYLITH_COMPONENT_ERROR(":TODO: @matt @brad Waiting for Matt to implement DMPlexComputeBdJacobianSingle().");
@@ -343,11 +344,6 @@ pylith::faults::FaultCohesiveKin::_auxFieldSetup(void) {
 
     // :ATTENTION: The order for adding subfields must match the order of the auxiliary fields in the FE kernels.
 
-    _auxFaultFactory->normalDir(); // 0
-    _auxFaultFactory->strikeDir(); // 1
-    if (3 == spaceDim) {
-        _auxFaultFactory->upDipDir(); // 2
-    } // if
     _auxFaultFactory->slip(); // numA-1
 
     PYLITH_METHOD_END;
@@ -362,25 +358,26 @@ pylith::faults::FaultCohesiveKin::_setFEKernelsRHSResidualFaultPositive(const py
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("_setFEKernelsRHSResidualFaultPositive(solution="<<solution.label()<<")");
 
-    const PetscDM dm = solution.dmMesh(); assert(dm);
+    const PetscDM dm = solution.dmMesh();assert(dm);
     PetscDS prob = NULL;
-    PetscErrorCode err = DMGetDS(dm, &prob); PYLITH_CHECK_ERROR(err);
+    PetscErrorCode err = DMGetDS(dm, &prob);PYLITH_CHECK_ERROR(err);
 
     // Elasticity equation (displacement/velocity).
     const PetscInt i_dispvel = (solution.hasSubfield("velocity")) ?
                                solution.subfieldInfo("velocity").index : solution.subfieldInfo("displacement").index;
     const PetscPointFunc g0u = pylith::fekernels::FaultCohesiveKin::g0u_pos;
     const PetscPointFunc g1u = NULL;
-    err = PetscDSSetResidual(prob, i_dispvel, g0u, g1u); PYLITH_CHECK_ERROR(err);
+    err = PetscDSSetResidual(prob, i_dispvel, g0u, g1u);PYLITH_CHECK_ERROR(err);
 
     // Fault slip constraint equation.
     const PetscInt i_lagrange = solution.subfieldInfo("lagrange_multiplier_fault").index;
     const PetscPointFunc g0l = pylith::fekernels::FaultCohesiveKin::g0l_pos;
     const PetscPointFunc g1l = NULL;
-    err = PetscDSSetResidual(prob, i_lagrange,  g0l, g1l); PYLITH_CHECK_ERROR(err);
+    err = PetscDSSetResidual(prob, i_lagrange,  g0l, g1l);PYLITH_CHECK_ERROR(err);
 
     PYLITH_METHOD_END;
 } // _setFEKernelsRHSResidualFaultPositive
+
 
 // ----------------------------------------------------------------------
 // Set pointwise functions for computing contributions of the positive
@@ -390,25 +387,26 @@ pylith::faults::FaultCohesiveKin::_setFEKernelsRHSResidualFaultNegative(const py
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("_setFEKernelsRHSResidualFaultNegative(solution="<<solution.label()<<")");
 
-    const PetscDM dm = solution.dmMesh(); assert(dm);
+    const PetscDM dm = solution.dmMesh();assert(dm);
     PetscDS prob = NULL;
-    PetscErrorCode err = DMGetDS(dm, &prob); PYLITH_CHECK_ERROR(err);
+    PetscErrorCode err = DMGetDS(dm, &prob);PYLITH_CHECK_ERROR(err);
 
     // Elasticity equation (displacement/velocity).
     const PetscInt i_dispvel = (solution.hasSubfield("velocity")) ?
                                solution.subfieldInfo("velocity").index : solution.subfieldInfo("displacement").index;
     const PetscPointFunc g0u = pylith::fekernels::FaultCohesiveKin::g0u_neg;
     const PetscPointFunc g1u = NULL;
-    err = PetscDSSetResidual(prob, i_dispvel, g0u, g1u); PYLITH_CHECK_ERROR(err);
+    err = PetscDSSetResidual(prob, i_dispvel, g0u, g1u);PYLITH_CHECK_ERROR(err);
 
     // Fault slip constraint equation.
     const PetscInt i_lagrange = solution.subfieldInfo("lagrange_multiplier_fault").index;
     const PetscPointFunc g0l = pylith::fekernels::FaultCohesiveKin::g0l_neg;
     const PetscPointFunc g1l = NULL;
-    err = PetscDSSetResidual(prob, i_lagrange,  g0l, g1l); PYLITH_CHECK_ERROR(err);
+    err = PetscDSSetResidual(prob, i_lagrange,  g0l, g1l);PYLITH_CHECK_ERROR(err);
 
     PYLITH_METHOD_END;
 } // _setFEKernelsRHSResidualFaultPositive
+
 
 // ----------------------------------------------------------------------
 // Set pointwise functions for computing contributions of the positive
@@ -418,9 +416,9 @@ pylith::faults::FaultCohesiveKin::_setFEKernelsRHSJacobianFaultPositive(const py
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("_setFEKernelsRHSJacobianFaultPositive(solution="<<solution.label()<<")");
 
-    const PetscDM dm = solution.dmMesh(); assert(dm);
+    const PetscDM dm = solution.dmMesh();assert(dm);
     PetscDS prob = NULL;
-    PetscErrorCode err = DMGetDS(dm, &prob); PYLITH_CHECK_ERROR(err);
+    PetscErrorCode err = DMGetDS(dm, &prob);PYLITH_CHECK_ERROR(err);
 
     const PetscInt i_dispvel = (solution.hasSubfield("velocity")) ?
                                solution.subfieldInfo("velocity").index : solution.subfieldInfo("displacement").index;
@@ -436,8 +434,8 @@ pylith::faults::FaultCohesiveKin::_setFEKernelsRHSJacobianFaultPositive(const py
     const PetscPointJac Jg2lu = NULL;
     const PetscPointJac Jg3lu = NULL;
 
-    err = PetscDSSetJacobian(prob, i_dispvel, i_lagrange, Jg0ul, Jg1ul, Jg2ul, Jg3ul); PYLITH_CHECK_ERROR(err);
-    err = PetscDSSetJacobian(prob, i_lagrange, i_dispvel, Jg0lu, Jg1lu, Jg2lu, Jg3lu); PYLITH_CHECK_ERROR(err);
+    err = PetscDSSetJacobian(prob, i_dispvel, i_lagrange, Jg0ul, Jg1ul, Jg2ul, Jg3ul);PYLITH_CHECK_ERROR(err);
+    err = PetscDSSetJacobian(prob, i_lagrange, i_dispvel, Jg0lu, Jg1lu, Jg2lu, Jg3lu);PYLITH_CHECK_ERROR(err);
 
     PYLITH_METHOD_END;
 } // _setFEKernelsRHSJacobianFaultPositive
@@ -451,9 +449,9 @@ pylith::faults::FaultCohesiveKin::_setFEKernelsRHSJacobianFaultNegative(const py
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("_setFEKernelsRHSJacobianFaultNegative(solution="<<solution.label()<<")");
 
-    const PetscDM dm = solution.dmMesh(); assert(dm);
+    const PetscDM dm = solution.dmMesh();assert(dm);
     PetscDS prob = NULL;
-    PetscErrorCode err = DMGetDS(dm, &prob); PYLITH_CHECK_ERROR(err);
+    PetscErrorCode err = DMGetDS(dm, &prob);PYLITH_CHECK_ERROR(err);
 
     const PetscInt i_dispvel = (solution.hasSubfield("velocity")) ?
                                solution.subfieldInfo("velocity").index : solution.subfieldInfo("displacement").index;
@@ -469,10 +467,11 @@ pylith::faults::FaultCohesiveKin::_setFEKernelsRHSJacobianFaultNegative(const py
     const PetscPointJac Jg2lu = NULL;
     const PetscPointJac Jg3lu = NULL;
 
-    err = PetscDSSetJacobian(prob, i_dispvel, i_lagrange, Jg0ul, Jg1ul, Jg2ul, Jg3ul); PYLITH_CHECK_ERROR(err);
-    err = PetscDSSetJacobian(prob, i_lagrange, i_dispvel, Jg0lu, Jg1lu, Jg2lu, Jg3lu); PYLITH_CHECK_ERROR(err);
+    err = PetscDSSetJacobian(prob, i_dispvel, i_lagrange, Jg0ul, Jg1ul, Jg2ul, Jg3ul);PYLITH_CHECK_ERROR(err);
+    err = PetscDSSetJacobian(prob, i_lagrange, i_dispvel, Jg0lu, Jg1lu, Jg2lu, Jg3lu);PYLITH_CHECK_ERROR(err);
 
     PYLITH_METHOD_END;
 } // _setFEKernelsRHSJacobianFaultPositive
+
 
 // End of file
