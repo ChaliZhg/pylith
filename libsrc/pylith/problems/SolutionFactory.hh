@@ -36,7 +36,7 @@
 // SolutionFactory-----------------------------------------------
 /// @brief C++ helper class for setting up solution subfields for unit tests.
 class pylith::problems::SolutionFactory : public pylith::utils::GenericComponent {
-    friend class TestSolutionFactory;   // unit testing
+    friend class TestSolutionFactory; // unit testing
 
     // PUBLIC METHODS /////////////////////////////////////////////////////
 public:
@@ -53,61 +53,73 @@ public:
     /// Destructor.
     ~SolutionFactory(void);
 
-    /** Add displacement field to solution field.
+    /** Add displacement subfield to solution field.
      *
      * @param[in] discretization Discretization for displacement field.
      */
     void displacement(const pylith::topology::FieldBase::Discretization& discretization);
 
-    /** Add velocity field to solution field.
-     *
-     * @param[in] discretization Discretization for velocity field.
-     */
-    void velocity(const pylith::topology::FieldBase::Discretization& discretization);
-
-    /** Add pressure field to solution field.
-     *
-     * @param[in] discretization Discretization for pressure field.
-     */
-    void pressure(const pylith::topology::FieldBase::Discretization& discretization);
-
-    /** Add fluid pressure field to solution field.
-     *
-     * @param[in] discretization Discretization for fluid pressure field.
-     */
-    void fluidPressure(const pylith::topology::FieldBase::Discretization& discretization);
-
-    /** Add temperature field to solution field.
-     *
-     * @param[in] discretization Discretization for temperature field.
-     */
-    void temperature(const pylith::topology::FieldBase::Discretization& discretization);
-
-    /** Add time derivative of displacement field to solution field.
+    /** Add time derivative of displacement subfield to solution field.
      *
      * @param[in] discretization Discretization for time derivative of displacement field.
      */
     void displacementDot(const pylith::topology::FieldBase::Discretization& discretization);
 
-    /** Add time derivative of velocity field to solution field.
+    /** Add velocity subfield to solution field.
+     *
+     * @param[in] discretization Discretization for velocity field.
+     */
+    void velocity(const pylith::topology::FieldBase::Discretization& discretization);
+
+    /** Add time derivative of velocity subfield to solution field.
      *
      * @param[in] discretization Discretization for time derivative of velocity field.
      */
     void velocityDot(const pylith::topology::FieldBase::Discretization& discretization);
 
-    /** Add time derivative of pressure field to solution field.
+    /** Add pressure subfield to solution field.
+     *
+     * @param[in] discretization Discretization for pressure field.
+     */
+    void pressure(const pylith::topology::FieldBase::Discretization& discretization);
+
+    /** Add time derivative of pressure subfield to solution field.
      *
      * @param[in] discretization Discretization for time derivative of pressure field.
      */
     void pressureDot(const pylith::topology::FieldBase::Discretization& discretization);
 
-    /** Add time derivative of fluid pressure field to solution field.
+    /** Add Lagrange multiplier subfield to solution field.
+     *
+     * @param discretization [description]
+     */
+    void lagrangeMultiplierFault(const pylith::topology::FieldBase::Discretization& discretization);
+
+    /** Add time derivative of Lagrange multiplier subfield to solution field.
+     *
+     * @param discretization [description]
+     */
+    void lagrangeMultiplierFaultDot(const pylith::topology::FieldBase::Discretization& discretization);
+
+    /** Add fluid pressure subfield to solution field.
+     *
+     * @param[in] discretization Discretization for fluid pressure field.
+     */
+    void fluidPressure(const pylith::topology::FieldBase::Discretization& discretization);
+
+    /** Add time derivative of fluid pressure subfield to solution field.
      *
      * @param[in] discretization Discretization for time derivative of fluid pressure field.
      */
     void fluidPressureDot(const pylith::topology::FieldBase::Discretization& discretization);
 
-    /** Add time derivative of temperature field to solution field.
+    /** Add temperature subfield to solution field.
+     *
+     * @param[in] discretization Discretization for temperature field.
+     */
+    void temperature(const pylith::topology::FieldBase::Discretization& discretization);
+
+    /** Add time derivative of temperature subfield to solution field.
      *
      * @param[in] discretization Discretization for time derivative of temperature field.
      */
@@ -131,12 +143,11 @@ private:
     // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private:
 
-    SolutionFactory(const SolutionFactory &);   ///< Not implemented.
-    const SolutionFactory& operator=(const SolutionFactory&);   ///< Not implemented
+    SolutionFactory(const SolutionFactory &); ///< Not implemented.
+    const SolutionFactory& operator=(const SolutionFactory&); ///< Not implemented
 
 }; // class SolutionFactory
 
 #endif // pylith_problems_solutionfactory_hh
-
 
 // End of file

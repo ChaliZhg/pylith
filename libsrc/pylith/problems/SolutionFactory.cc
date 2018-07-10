@@ -42,23 +42,21 @@ pylith::problems::SolutionFactory::SolutionFactory(pylith::topology::Field& solu
                                                    const spatialdata::units::Nondimensional& normalizer) :
     _solution(solution),
     _normalizer(normalizer),
-    _spaceDim(solution.spaceDim())
-{ // constructor
+    _spaceDim(solution.spaceDim()) {
     GenericComponent::name(_genericComponent);
     assert(1 <= _spaceDim && _spaceDim <= 3);
 } // constructor
 
+
 // ----------------------------------------------------------------------
 // Destructor.
-pylith::problems::SolutionFactory::~SolutionFactory(void)
-{ // destructor
-} // destructor
+pylith::problems::SolutionFactory::~SolutionFactory(void) {} // destructor
+
 
 // ----------------------------------------------------------------------
 // Add displacement field to solution field.
 void
-pylith::problems::SolutionFactory::displacement(const pylith::topology::Field::Discretization& discretization)
-{ // displacement
+pylith::problems::SolutionFactory::displacement(const pylith::topology::Field::Discretization& discretization) {
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("displacement(discretization=typeid(discretization).name())");
 
@@ -84,120 +82,9 @@ pylith::problems::SolutionFactory::displacement(const pylith::topology::Field::D
 
 
 // ----------------------------------------------------------------------
-// Add time derivative of velocity field to solution field.
-void
-pylith::problems::SolutionFactory::velocity(const pylith::topology::Field::Discretization& discretization)
-{ // velocity
-    PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("velocity(discretization=typeid(discretization).name())");
-
-    const char* fieldName = "velocity";
-    const char* componentNames[3] = { "velocity_x", "velocity_y", "velocity_z" };
-
-    pylith::topology::Field::Description description;
-    description.label = fieldName;
-    description.alias = fieldName;
-    description.vectorFieldType = pylith::topology::Field::VECTOR;
-    description.numComponents = _spaceDim;
-    description.componentNames.resize(_spaceDim);
-    for (int i = 0; i < _spaceDim; ++i) {
-        description.componentNames[i] = componentNames[i];
-    } // for
-    description.scale = _normalizer.lengthScale() / _normalizer.timeScale();
-    description.validator = NULL;
-
-    _solution.subfieldAdd(description, discretization);
-
-    PYLITH_METHOD_END;
-} // velocity
-
-
-// ----------------------------------------------------------------------
-// Add time derivative of pressure field to solution field.
-void
-pylith::problems::SolutionFactory::pressure(const pylith::topology::Field::Discretization& discretization)
-{ // pressure
-    PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("pressure(discretization=typeid(discretization).name())");
-
-    const char* fieldName = "pressure";
-    const char* componentNames[1] = { "pressure" };
-
-    pylith::topology::Field::Description description;
-    description.label = fieldName;
-    description.alias = fieldName;
-    description.vectorFieldType = pylith::topology::Field::SCALAR;
-    description.numComponents = 1;
-    description.componentNames.resize(1);
-    description.componentNames[0] = componentNames[0];
-    description.scale = _normalizer.pressureScale();
-    description.validator = NULL;
-
-    _solution.subfieldAdd(description, discretization);
-
-    PYLITH_METHOD_END;
-} // pressure
-
-
-// ----------------------------------------------------------------------
-// Add fluid pressure field to solution field.
-void
-pylith::problems::SolutionFactory::fluidPressure(const pylith::topology::Field::Discretization& discretization)
-{ // fluidPressure
-    PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("fluidPressure(discretization=typeid(discretization).name())");
-
-    const char* fieldName = "fluid_pressure";
-    const char* componentNames[1] = { "fluid_pressure" };
-
-    pylith::topology::Field::Description description;
-    description.label = fieldName;
-    description.alias = fieldName;
-    description.vectorFieldType = pylith::topology::Field::SCALAR;
-    description.numComponents = 1;
-    description.componentNames.resize(1);
-    description.componentNames[0] = componentNames[0];
-    description.scale = _normalizer.pressureScale();
-    description.validator = NULL;
-
-    _solution.subfieldAdd(description, discretization);
-
-    PYLITH_METHOD_END;
-} // fluidPressure
-
-
-// ----------------------------------------------------------------------
-// Add temperature field to solution field.
-void
-pylith::problems::SolutionFactory::temperature(const pylith::topology::Field::Discretization& discretization)
-{ // temperature
-    PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("temperature(discretization=typeid(discretization).name())");
-
-    const char* fieldName = "temperature";
-    const char* componentNames[1] = { "temperature" };
-
-    pylith::topology::Field::Description description;
-    description.label = fieldName;
-    description.alias = fieldName;
-    description.vectorFieldType = pylith::topology::Field::SCALAR;
-    description.numComponents = 1;
-    description.componentNames.resize(1);
-    description.componentNames[0] = componentNames[0];
-    description.scale = _normalizer.temperatureScale();
-    description.validator = NULL;
-
-    _solution.subfieldAdd(description, discretization);
-
-    PYLITH_METHOD_END;
-} // temperature
-
-
-// ----------------------------------------------------------------------
 // Add time derivative of displacement field to solution field.
 void
-pylith::problems::SolutionFactory::displacementDot(const pylith::topology::Field::Discretization& discretization)
-{ // displacementDot
+pylith::problems::SolutionFactory::displacementDot(const pylith::topology::Field::Discretization& discretization) {
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("displacementDot(discretization=typeid(discretization).name())");
 
@@ -225,8 +112,35 @@ pylith::problems::SolutionFactory::displacementDot(const pylith::topology::Field
 // ----------------------------------------------------------------------
 // Add time derivative of velocity field to solution field.
 void
-pylith::problems::SolutionFactory::velocityDot(const pylith::topology::Field::Discretization& discretization)
-{ // velocityDot
+pylith::problems::SolutionFactory::velocity(const pylith::topology::Field::Discretization& discretization) {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_JOURNAL_DEBUG("velocity(discretization=typeid(discretization).name())");
+
+    const char* fieldName = "velocity";
+    const char* componentNames[3] = { "velocity_x", "velocity_y", "velocity_z" };
+
+    pylith::topology::Field::Description description;
+    description.label = fieldName;
+    description.alias = fieldName;
+    description.vectorFieldType = pylith::topology::Field::VECTOR;
+    description.numComponents = _spaceDim;
+    description.componentNames.resize(_spaceDim);
+    for (int i = 0; i < _spaceDim; ++i) {
+        description.componentNames[i] = componentNames[i];
+    } // for
+    description.scale = _normalizer.lengthScale() / _normalizer.timeScale();
+    description.validator = NULL;
+
+    _solution.subfieldAdd(description, discretization);
+
+    PYLITH_METHOD_END;
+} // velocity
+
+
+// ----------------------------------------------------------------------
+// Add time derivative of velocity field to solution field.
+void
+pylith::problems::SolutionFactory::velocityDot(const pylith::topology::Field::Discretization& discretization) {
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("velocityDot(discretization=typeid(discretization).name())");
 
@@ -254,8 +168,33 @@ pylith::problems::SolutionFactory::velocityDot(const pylith::topology::Field::Di
 // ----------------------------------------------------------------------
 // Add time derivative of pressure field to solution field.
 void
-pylith::problems::SolutionFactory::pressureDot(const pylith::topology::Field::Discretization& discretization)
-{ // pressureDot
+pylith::problems::SolutionFactory::pressure(const pylith::topology::Field::Discretization& discretization) {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_JOURNAL_DEBUG("pressure(discretization=typeid(discretization).name())");
+
+    const char* fieldName = "pressure";
+    const char* componentNames[1] = { "pressure" };
+
+    pylith::topology::Field::Description description;
+    description.label = fieldName;
+    description.alias = fieldName;
+    description.vectorFieldType = pylith::topology::Field::SCALAR;
+    description.numComponents = 1;
+    description.componentNames.resize(1);
+    description.componentNames[0] = componentNames[0];
+    description.scale = _normalizer.pressureScale();
+    description.validator = NULL;
+
+    _solution.subfieldAdd(description, discretization);
+
+    PYLITH_METHOD_END;
+} // pressure
+
+
+// ----------------------------------------------------------------------
+// Add time derivative of pressure field to solution field.
+void
+pylith::problems::SolutionFactory::pressureDot(const pylith::topology::Field::Discretization& discretization) {
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("pressureDot(discretization=typeid(discretization).name())");
 
@@ -279,10 +218,91 @@ pylith::problems::SolutionFactory::pressureDot(const pylith::topology::Field::Di
 
 
 // ----------------------------------------------------------------------
+// Add Lagrange multiplier subfield for fault to solution field.
+void
+pylith::problems::SolutionFactory::lagrangeMultiplierFault(const pylith::topology::Field::Discretization& discretization) {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_JOURNAL_DEBUG("lagrangeMultiplierFault(discretization=typeid(discretization).name())");
+
+    const char* fieldName = "lagrange_multiplier_fault";
+    const char* componentNames[3] = { "lagrange_multiplier_fault_x", "lagrange_multiplier_fault_y", "lagrange_multiplier_fault_z" };
+
+    pylith::topology::Field::Description description;
+    description.label = fieldName;
+    description.alias = fieldName;
+    description.vectorFieldType = pylith::topology::Field::VECTOR;
+    description.numComponents = _spaceDim;
+    description.componentNames.resize(_spaceDim);
+    for (int i = 0; i < _spaceDim; ++i) {
+        description.componentNames[i] = componentNames[i];
+    } // for
+    description.scale = _normalizer.lengthScale();
+    description.validator = NULL;
+
+    _solution.subfieldAdd(description, discretization);
+
+    PYLITH_METHOD_END;
+} // lagrangeMultiplierFault
+
+
+// ----------------------------------------------------------------------
+// Add time derivative of lagrangeMultiplierFault field to solution field.
+void
+pylith::problems::SolutionFactory::lagrangeMultiplierFaultDot(const pylith::topology::Field::Discretization& discretization) {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_JOURNAL_DEBUG("lagrangeMultiplierFaultDot(discretization=typeid(discretization).name())");
+
+    const char* fieldName = "lagrangeMultiplierFault_dot";
+    const char* componentNames[3] = { "lagrange_multiplier_fault_dot_x", "lagrange_multiplier_fault_dot_y", "lagrange_multiplier_fault_dot_z" };
+
+    pylith::topology::Field::Description description;
+    description.label = fieldName;
+    description.alias = fieldName;
+    description.vectorFieldType = pylith::topology::Field::VECTOR;
+    description.numComponents = _spaceDim;
+    description.componentNames.resize(_spaceDim);
+    for (int i = 0; i < _spaceDim; ++i) {
+        description.componentNames[i] = componentNames[i];
+    } // for
+    description.scale = _normalizer.lengthScale() / _normalizer.timeScale();
+    description.validator = NULL;
+
+    _solution.subfieldAdd(description, discretization);
+
+    PYLITH_METHOD_END;
+} // lagrangeMultiplierFaultDot
+
+
+// ----------------------------------------------------------------------
+// Add fluid pressure field to solution field.
+void
+pylith::problems::SolutionFactory::fluidPressure(const pylith::topology::Field::Discretization& discretization) {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_JOURNAL_DEBUG("fluidPressure(discretization=typeid(discretization).name())");
+
+    const char* fieldName = "fluid_pressure";
+    const char* componentNames[1] = { "fluid_pressure" };
+
+    pylith::topology::Field::Description description;
+    description.label = fieldName;
+    description.alias = fieldName;
+    description.vectorFieldType = pylith::topology::Field::SCALAR;
+    description.numComponents = 1;
+    description.componentNames.resize(1);
+    description.componentNames[0] = componentNames[0];
+    description.scale = _normalizer.pressureScale();
+    description.validator = NULL;
+
+    _solution.subfieldAdd(description, discretization);
+
+    PYLITH_METHOD_END;
+} // fluidPressure
+
+
+// ----------------------------------------------------------------------
 // Add time derivative of fluid pressure field to solution field.
 void
-pylith::problems::SolutionFactory::fluidPressureDot(const pylith::topology::Field::Discretization& discretization)
-{ // fluidPressureDot
+pylith::problems::SolutionFactory::fluidPressureDot(const pylith::topology::Field::Discretization& discretization) {
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("fluidPressureDot(discretization=typeid(discretization).name())");
 
@@ -306,10 +326,37 @@ pylith::problems::SolutionFactory::fluidPressureDot(const pylith::topology::Fiel
 
 
 // ----------------------------------------------------------------------
+// Add temperature field to solution field.
+void
+pylith::problems::SolutionFactory::temperature(const pylith::topology::Field::Discretization& discretization) {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_JOURNAL_DEBUG("temperature(discretization=typeid(discretization).name())");
+
+    const char* fieldName = "temperature";
+    const char* componentNames[1] = { "temperature" };
+
+    pylith::topology::Field::Description description;
+    description.label = fieldName;
+    description.alias = fieldName;
+    description.vectorFieldType = pylith::topology::Field::SCALAR;
+    description.numComponents = 1;
+    description.componentNames.resize(1);
+    description.componentNames[0] = componentNames[0];
+    description.scale = _normalizer.temperatureScale();
+    description.validator = NULL;
+
+    _solution.subfieldAdd(description, discretization);
+
+    PYLITH_METHOD_END;
+} // temperature
+
+
+// ----------------------------------------------------------------------
 // Add time derivative of temperature field to solution field.
 void
-pylith::problems::SolutionFactory::temperatureDot(const pylith::topology::Field::Discretization& discretization)
-{ // temperatureDot
+pylith::problems::SolutionFactory::temperatureDot(const pylith::topology::Field::Discretization& discretization){ //
+                                                                                                                 //
+                                                                                                                 // temperatureDot
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("temperatureDot(discretization=typeid(discretization).name())");
 
@@ -334,8 +381,7 @@ pylith::problems::SolutionFactory::temperatureDot(const pylith::topology::Field:
 
 // ----------------------------------------------------------------------
 void
-pylith::problems::SolutionFactory::setValues(spatialdata::spatialdb::SpatialDB* db)
-{ // setValues
+pylith::problems::SolutionFactory::setValues(spatialdata::spatialdb::SpatialDB* db){ // setValues
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("setValues(db="<<typeid(*db).name()<<")");
 
