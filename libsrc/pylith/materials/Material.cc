@@ -435,7 +435,7 @@ pylith::materials::Material::_computeJacobian(PetscMat jacobianMat,
 
 
 // ----------------------------------------------------------------------
-// Get factory for setting up auxliary fields.
+// Get factory for setting up auxiliary fields.
 pylith::feassemble::AuxiliaryFactory*
 pylith::materials::Material::_auxFactory(void) {
     return _auxMaterialFactory;
