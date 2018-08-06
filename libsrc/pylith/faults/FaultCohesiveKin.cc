@@ -47,13 +47,12 @@
 
 // ----------------------------------------------------------------------
 // Default constructor.
-pylith::faults::FaultCohesiveKin::FaultCohesiveKin(void){ // constructor
-} // constructor
+pylith::faults::FaultCohesiveKin::FaultCohesiveKin(void) {}
 
 
 // ----------------------------------------------------------------------
 // Destructor.
-pylith::faults::FaultCohesiveKin::~FaultCohesiveKin(void){ // destructor
+pylith::faults::FaultCohesiveKin::~FaultCohesiveKin(void){
     deallocate();
 } // destructor
 
