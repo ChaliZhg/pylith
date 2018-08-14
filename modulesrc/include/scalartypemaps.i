@@ -16,12 +16,12 @@
 // ======================================================================
 //
 
-// Map a Python float scalar to PylistReal.
+// Map a Python float scalar to PylithReal.
 %typemap(in) PylithReal {
   $1 = PyFloat_AsDouble($input);
  } // typemap
 
-// Map a PylithScalar to a Python float
+// Map a PylithReal to a Python float
 %typemap(out) PylithReal {
   $result = PyFloat_FromDouble($1);
  } // typemap
@@ -85,7 +85,7 @@ convert_scalararray(PyObject* input,
     array = obj_to_array_contiguous_allow_conversion($input, NPY_DOUBLE, &is_new_object);
   } else {
     PyErr_Format(PyExc_TypeError, 
-		 "Unknown size for PyLithscalar.  '%ld' given.", 
+		 "Unknown size for PylithReal.  '%ld' given.", 
 		 sizeof(PylithReal));
   } // if/else
   npy_intp size[1] = { -1 };

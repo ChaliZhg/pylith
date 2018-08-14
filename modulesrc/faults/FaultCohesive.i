@@ -88,6 +88,12 @@ namespace pylith {
 	     */
 	    void refDir2(const PylithReal vec[3]);
 	    
+	    /** Get mesh associated with integrator domain.
+	     *
+	     * @returns Mesh associated with integrator domain.
+	     */
+	    const pylith::topology::Mesh& domainMesh(void) const;
+	    
 	    /** Adjust mesh topology for fault implementation.
 	     *
 	     * @param mesh[in] PETSc mesh.
@@ -116,6 +122,22 @@ namespace pylith {
 	    void initialize(const pylith::topology::Field& solution);
 	    
 	    
+    // PROTECTED NETHODS //////////////////////////////////////////////////
+protected:
+
+    /** Setup auxiliary subfields (discretization and query fns).
+     *
+     * Create subfields in auxiliary fields (includes name of the field,
+     * vector field type, discretization, and scale for
+     * nondimensionalization) and set query functions for filling them
+     * from a spatial database.
+     *
+     * @attention The order of the calls to subfieldAdd() must match the
+     * order of the auxiliary fields in the FE kernels.
+     */
+    virtual
+    void _auxFieldSetup(void) = 0;
+
 	}; // class FaultCohesive
 	
     } // faults

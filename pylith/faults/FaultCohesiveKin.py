@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-#
 # ----------------------------------------------------------------------
 #
 # Brad T. Aagaard, U.S. Geological Survey
@@ -15,17 +13,14 @@
 #
 # ----------------------------------------------------------------------
 #
-
 # @file pylith/faults/FaultCohesiveKin.py
 #
-
 # @brief Python object for a fault surface with kinematic
 # (prescribed) slip implemented with cohesive elements.
 #
 # Factory: fault
 
 from .FaultCohesive import FaultCohesive
-from pylith.feassemble.IntegratorPointwise import IntegratorPointwise
 from .faults import FaultCohesiveKin as ModuleFaultCohesiveKin
 
 # ITEM FACTORIES ///////////////////////////////////////////////////////
@@ -40,24 +35,21 @@ def eqsrcFactory(name):
     return facility(name, family="eq_kinematic_src", factory=KinSrcStep)
 
 
-# FaultCohesiveKin class
-class FaultCohesiveKin(FaultCohesive, IntegratorPointwise, ModuleFaultCohesiveKin):
+class FaultCohesiveKin(FaultCohesive, ModuleFaultCohesiveKin):
     """
     Python object for a fault surface with kinematic (prescribed) slip
     implemented with cohesive elements.
 
-    Inventory
+    INVENTORY
 
-    @class Inventory
-    Python object for managing FaultCohesiveKin facilities and properties.
+    Properties
+      - None
 
-    \b Properties
-    @li None
+    Facilities
+      - *eq_srcs* Kinematic earthquake sources information.
+      - *observers* Observers of the fault (e.g., output).
 
-    \b Facilities
-    @li \b eq_srcs Kinematic earthquake sources information.
-
-    Factory: fault
+    FACTORY: fault
     """
 
     # INVENTORY //////////////////////////////////////////////////////////
@@ -79,7 +71,6 @@ class FaultCohesiveKin(FaultCohesive, IntegratorPointwise, ModuleFaultCohesiveKi
         Initialize configuration.
         """
         FaultCohesive.__init__(self, name)
-        IntegratorPointwise.__init__(self)
         return
 
     def preinitialize(self, mesh):
@@ -88,11 +79,10 @@ class FaultCohesiveKin(FaultCohesive, IntegratorPointwise, ModuleFaultCohesiveKi
         """
         from pylith.mpi.Communicator import mpi_comm_world
         comm = mpi_comm_world()
-
         if 0 == comm.rank:
             self._info.log("Pre-initializing fault '%s'." % self.label)
+            
         FaultCohesive.preinitialize(self, mesh)
-        IntegratorPointwise.preinitialize(self, mesh)
 
         for eqsrc in self.eqsrcs.components():
             eqsrc.preinitialize()
@@ -105,7 +95,6 @@ class FaultCohesiveKin(FaultCohesive, IntegratorPointwise, ModuleFaultCohesiveKi
         Verify compatibility of configuration.
         """
         FaultCohesive.verifyConfiguration(self)
-        Integrator.verifyConfiguration(self)
         ModuleFaultCohesiveKin.verifyConfiguration(self, self.mesh())
 
         for eqsrc in self.eqsrcs.components():
@@ -120,7 +109,6 @@ class FaultCohesiveKin(FaultCohesive, IntegratorPointwise, ModuleFaultCohesiveKi
         for eqsrc in self.eqsrcs.components():
             eqsrc.finalize()
         FaultCohesive.finalize(self)
-        Integrator.finalize(self)
         # self.output.close()
         # self.output.finalize()
         return

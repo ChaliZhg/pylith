@@ -67,7 +67,7 @@ pylith::faults::TopologyOps::createFault(pylith::topology::Mesh* faultMesh,
                 if ((closure[cl] < vStart) || (closure[cl] >= vEnd)) { continue;}
                 err = DMLabelGetValue(groupField, closure[cl], &value);PYLITH_CHECK_ERROR(err);
                 if (value == defaultValue) {invalidCell = PETSC_FALSE;break;}
-            }// for
+            } // for
             err = DMPlexRestoreTransitiveClosure(dmMesh, dmpoints[c], PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
             if (invalidCell) {
                 std::ostringstream msg;
@@ -88,6 +88,7 @@ pylith::faults::TopologyOps::createFault(pylith::topology::Mesh* faultMesh,
 
     PYLITH_METHOD_END;
 }// createFault
+
 
 
 // ----------------------------------------------------------------------
@@ -212,6 +213,7 @@ pylith::faults::TopologyOps::create(pylith::topology::Mesh* mesh,
 }// create
 
 
+
 // ----------------------------------------------------------------------
 // Form a parallel fault mesh using the cohesive cell information
 void
@@ -306,7 +308,7 @@ pylith::faults::TopologyOps::classifyCellsDM(PetscDM dmMesh,
             if (point >= firstCohesiveCell) {
                 if (debug) { std::cout << "  already a cohesive cell" << std::endl;}
                 continue;
-            }// if
+            } // if
              // If neighbor shares a face with anyone in replaceCells, then add
             for (PointSet::const_iterator c_iter = vReplaceCells.begin(); c_iter != vReplaceCells.end(); ++c_iter) {
                 const PetscInt *coveringPoints;
@@ -360,6 +362,7 @@ pylith::faults::TopologyOps::classifyCellsDM(PetscDM dmMesh,
     // More checking
     noReplaceCells.insert(vNoReplaceCells.begin(), vNoReplaceCells.end());
 }// classifyCellsDM
+
 
 
 // End of file
