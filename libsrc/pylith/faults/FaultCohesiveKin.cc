@@ -247,12 +247,12 @@ pylith::faults::FaultCohesiveKin::computeRHSJacobian(PetscMat jacobianMat,
     assert(solution.localVector());
 
     PetscDMLabel faultDMLabel = NULL;
-    const int labelId = 1;
-    std::string faultLabel;
-
+    const std::string& faultLabel = std::string(label()) + std::string("-interface");
+    const int faceDim = _auxField->mesh().dimension();
+    
     PYLITH_COMPONENT_DEBUG("DMPlexComputeBdJacobianSingle() on the positive side of fault ''"<<label()<<"')");
     _setFEKernelsRHSJacobianFaultPositive(solution);
-    faultLabel = std::string(label()) + std::string("_fault_positive");
+    int labelId = 100 + faceDim; // faces on positive side of the fault
     err = DMGetLabel(dmSoln, faultLabel.c_str(), &faultDMLabel);PYLITH_CHECK_ERROR(err);
 
     err = DMPlexComputeBdJacobianSingle(dmSoln, t, faultDMLabel, 1, &labelId, i_dispvel, solution.localVector(),
@@ -262,7 +262,7 @@ pylith::faults::FaultCohesiveKin::computeRHSJacobian(PetscMat jacobianMat,
 
     PYLITH_COMPONENT_DEBUG("DMPlexComputeBdJacobianSingle() on the negative side of fault ''"<<label()<<"')");
     _setFEKernelsRHSJacobianFaultNegative(solution);
-    faultLabel = std::string(label()) + std::string("_fault_negative");
+    labelId = -(100 + faceDim); // faces on negative side of the fault
     err = DMGetLabel(dmSoln, faultLabel.c_str(), &faultDMLabel);PYLITH_CHECK_ERROR(err);
     err = DMPlexComputeBdJacobianSingle(dmSoln, t, faultDMLabel, 1, &labelId, i_dispvel, solution.localVector(),
                                         solutionDot.localVector(), s_tshift, jacobianMat, precondMat);PYLITH_CHECK_ERROR(err);
